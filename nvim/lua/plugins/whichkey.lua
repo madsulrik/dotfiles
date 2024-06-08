@@ -42,6 +42,11 @@ return {
         s = { tele_built.lsp_document_symbols, "[F]ind lsp document [S]ymbols" },
         t = { "<cmd>Neotree<CR>", "[F] Open Neo[T]ree" },
       },
+      ['<leader>t'] = {
+        name = "[T]ests", _ = 'which_key_ignore',
+        t = {"<cmd>TestNearest<CR>", "[T]est [t] Nearest"},
+        T = {"<cmd>TestFile<CR>", "[T]est [T] ile"}
+      },
       ['<leader>x'] = {
         name = "[T]rouble",
         x = { "<cmd>Trouble<CR>", "[T]rouble Open" },
