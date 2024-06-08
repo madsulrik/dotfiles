@@ -5,14 +5,24 @@ return {
     opts = { style = "moon" },
   },
 
-  -- dracula
   {
-    "Mofiqul/dracula.nvim",
-    -- priority = 1000,
+    "rebelot/kanagawa.nvim",
+    opts = {
+      theme = "dragon",
+    },
     config = function()
-      -- vim.cmd.colorscheme('dracula')
+      vim.cmd.colorscheme('kanagawa')
     end,
   },
+
+  -- dracula
+  -- {
+  --   "Mofiqul/dracula.nvim",
+  --   -- priority = 1000,
+  --   config = function()
+  --     -- vim.cmd.colorscheme('dracula')
+  --   end,
+  -- },
 
   -- Doom
   {
@@ -22,7 +32,13 @@ return {
       -- vim.cmd.colorscheme('doom-one')
     end
   },
-
+  -- dracula new
+  {
+    "binhtran432k/dracula.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
   -- catppuccin
   {
     "catppuccin/nvim",
@@ -66,7 +82,7 @@ return {
       },
     },
     config = function()
-      vim.cmd.colorscheme('catppuccin')
+      -- vim.cmd.colorscheme('catppuccin')
     end,
   },
 }

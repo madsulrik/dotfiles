@@ -49,6 +49,8 @@ M.setup_language_servers = function(defaults)
     Solargraph = {
       -- root_dir = lsputil.root_pattern("Gemfile", ".git")(fname) or lsputil.path.dirname(vim.api.nvim_buf_get_name(0)),
       root_dir = lsputil.root_pattern("Gemfile", ".git", "."),
+      formatting = true,
+      useBundler = true,
     },
   }, defaults))
 
@@ -78,6 +80,7 @@ M.default_on_attach = function(client, bufnr)
     vim.keymap.set('n', keys, func, { silent = true, remap = true, buffer = bufnr, desc = desc })
   end
 
+
   nmap("K", vim.lsp.buf.hover, "Hover documentation")
   nmap("<C-k>", vim.lsp.buf.signature_help, "Signature documentation")
 
@@ -93,6 +96,7 @@ M.default_on_attach = function(client, bufnr)
   nmap("gj", vim.diagnostic.goto_prev, "Go to preious diagnostic message")
   nmap("<leader>e", vim.diagnostic.open_float, "Open floating diagnostic message")
   nmap("<leader>q", vim.diagnostic.setloclist, "Open diagnostic list")
+  nmap("<C-c>i", vim.lsp.buf.format, "Format current buffer with LSP")
 
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
