@@ -12,7 +12,7 @@ git clone https://github.com/madsulrik/dotfiles.git
 cd dotfiles
 
 # Link Doom Emacs configuration
-ln -s $(pwd)/doom-emacs ~/.config/.doom.d
+ln -s $(pwd)/doom ~/.config/doom
 
 # Link Neovim configuration
 ln -s $(pwd)/nvim ~/.config/nvim
