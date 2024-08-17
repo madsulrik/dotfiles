@@ -90,13 +90,83 @@
 
 
 ;; ;; ================
+;; ;;  LSP
+;; ;; =================
+
+(after! lsp-mode
+  (map!
+   :map lsp-mode-map
+   (:desc  "Show signature" :n "C-k" #'lsp-signature-posframe)
+   (:desc  "Format buffer" :n "C-c i" #'lsp-format-buffer)))
+
+(after! lsp-ui
+  (setq lsp-lens-enable nil)
+  (setq lsp-ui-sideline-show-diagnostics nil))
+
+
+
+;; ;; ================
+;; ;;  Spelling languages
+;; ;; =================
+
+
+(setq ispell-dictionary "en")
+
+(defun mus/change-language-da ()
+  (interactive)
+  (setq-local company-ispell-dictionary (file-truename "~/.config/doom/etc/dansk.txt"))
+  (setq-local ispell-dictionary "da")
+  (setq-local ispell-personal-dictionary
+              (expand-file-name (concat "ispell/" ispell-dictionary ".pws")
+                                doom-data-dir))
+  (flyspell-buffer))
+
+
+(defun mus/change-language-en ()
+  (interactive)
+  (setq-local company-ispell-dictionary nil)
+  (setq-local ispell-dictionary "en")
+  (setq-local ispell-personal-dictionary
+              (expand-file-name (concat "ispell/" ispell-dictionary ".pws")
+                                doom-data-dir))
+  (flyspell-buffer))
+
+(defun mus/toggle-language ()
+  "Toggle between Danish and English spell checking."
+  (interactive)
+  (if (string-equal ispell-dictionary "da")
+      (mus/change-language-en)
+    (mus/change-language-da))
+  (message "Switched to %s" ispell-dictionary))
+
+
+(map! :leader
+      :desc "Toggle line numbers"
+      "t L" #'doom/toggle-line-numbers)
+
+(map! :leader
+      :desc "Toggle spell check language"
+      "t l" #'mus/toggle-language)
+
+;; ;; ================
+;; ;;  Flycheck
+;; ;; =================
+
+
+(after! flycheck
+  (map!
+   :map flycheck-mode-map
+   (:leader :desc "Display error at point" "e" #'flycheck-display-error-at-point)
+   (:desc  "Next Error" :n "gj" #'next-error
+    :desc  "Previous Error" :n "gk" #'previous-error)))
+
+
+;; ;; ================
 ;; ;;  Zen mode
 ;; ;; =================
 
 (setq +zen-mixed-pitch-modes '())
 (setq +zen-text-scale 1)
-
-
 
 
 (after! writeroom-mode
@@ -120,7 +190,6 @@
 
 (setq org-directory "~/Documents/odyssey")
 (setq org-roam-directory org-directory)
-
 
 (after! org
 
