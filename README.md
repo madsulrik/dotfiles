@@ -11,6 +11,14 @@ This repository contains my personal dotfiles for various tools I use on a daily
 git clone https://github.com/madsulrik/dotfiles.git
 cd dotfiles
 
+
+# Link Alacritty configuration
+ln -s $(pwd)/alacritty ~/.config/alacritty
+
+# Link Tmux configuration
+ln -s $(pwd)/tmux ~/.config/tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 # Link Doom Emacs configuration
 ln -s $(pwd)/doom-emacs ~/.config/.doom.d
 

@@ -11,7 +11,7 @@ return {
       theme = "dragon",
     },
     config = function()
-      vim.cmd.colorscheme('kanagawa')
+      -- vim.cmd.colorscheme('kanagawa')
     end,
   },
 
@@ -82,7 +82,7 @@ return {
       },
     },
     config = function()
-      -- vim.cmd.colorscheme('catppuccin')
+      vim.cmd.colorscheme('catppuccin')
     end,
   },
 }

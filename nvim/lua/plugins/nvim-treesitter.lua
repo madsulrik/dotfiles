@@ -30,7 +30,9 @@ return {
       "toml",
       "yaml",
       "vim",
+      "elm",
       "haskell",
+      "zig",
       "purescript",
     }
     configs.setup({

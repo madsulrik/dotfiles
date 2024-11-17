@@ -68,6 +68,12 @@ M.setup_language_servers = function(defaults)
 
   -- Haskell
   lspconfig.hls.setup(defaults)
+
+  -- Zig
+  lspconfig.zls.setup(vim.tbl_deep_extend("force", {
+    enable_build_on_save = true,
+    build_on_save_step = "check"
+  }, defaults))
 end
 
 
