@@ -20,7 +20,7 @@ ln -s $(pwd)/tmux ~/.config/tmux
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Link Doom Emacs configuration
-ln -s $(pwd)/doom-emacs ~/.config/.doom.d
+ln -s $(pwd)/doom ~/.config/doom
 
 # Link Neovim configuration
 ln -s $(pwd)/nvim ~/.config/nvim
