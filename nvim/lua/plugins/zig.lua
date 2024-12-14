@@ -7,10 +7,10 @@ return {
       pattern = "zig",
       callback = function()
         -- Key mapping for Zig build with a description
-        vim.keymap.set("n", "<localleader>b", ":make<CR>",
+        vim.keymap.set("n", "<localleader>b", ":make!<CR>",
           { desc = "Run make", noremap = true, silent = true, buffer = true })
 
-        vim.keymap.set("n", "<localleader>r", ":make run<CR>",
+        vim.keymap.set("n", "<localleader>r", ":make! run<CR>",
           { desc = "Run make run", noremap = true, silent = true, buffer = true })
       end,
 
