@@ -13,7 +13,7 @@ return {
 
     conform.setup({
       formatters_by_ft = {
-        ruby = { "standard" },
+        -- ruby = { "standardrb", lsp_format = "fallback" },
         eruby = { "erb_format" },
       }
     })

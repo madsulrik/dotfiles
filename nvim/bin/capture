@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Join all arguments as title
+title="$*"
+
+# Fallback to timestamp if no title provided
+if [ -z "$title" ]; then
+  title="$(date '+%Y-%m-%d_%H-%M-%S')"
+fi
+
+# Call Neovim with ObsidianNewFromTemplate
+nvim +"ObsidianNewFromTemplate $title"

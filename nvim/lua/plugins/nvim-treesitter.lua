@@ -45,7 +45,10 @@ return {
       ignore_install = {},
       modules = {},
       highlight = { enable = true },
-      indent = { enable = true },
+      indent = {
+        enable = true,
+        disable = { "ruby" }
+      },
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -55,7 +58,6 @@ return {
           scope_incremental = '<c-s>',
         },
       },
-
     })
   end,
 }

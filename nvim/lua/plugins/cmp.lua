@@ -71,9 +71,9 @@ return {
       sources = {
         {
           name = "nvim_lsp",
-          entry_filter = function(entry, ctx)
-            return require("cmp").lsp.CompletionItemKind.Text ~= entry:get_kind()
-          end
+          -- entry_filter = function(entry, ctx)
+          --   return require("cmp").lsp.CompletionItemKind.Text ~= entry:get_kind()
+          -- end
         },
         -- { name = 'luasnip' }, # turned off for now
         { name = 'path' },

@@ -85,6 +85,7 @@ return {
         desc = "Toggle ZenMode"
       }
     },
+    cmd = { "ZenMode" },
     opts = {
       window = {
         options = {

@@ -9,16 +9,19 @@ return {
   -- init = function()
   --   vim.opt_local.conceallevel = 1
   -- end,
+  cmd = { "ObsidianTodayFull", "ObsidianNewFromTemplate" },
   keys = {
-    { '<leader>oo', '<cmd>ObsidianQuickSwitch<cr>', desc = 'Quick Switch',        mode = 'n' },
-    { '<leader>og', '<cmd>ObsidianSearch<cr>',      desc = 'Grep Obsidian notes', mode = 'n' },
-    { '<leader>ot', '<cmd>ObsidianTags<cr>',      desc = 'Search Obsidian tags', mode = 'n' },
+    { '<leader>oo', '<cmd>ObsidianQuickSwitch<cr>',     desc = 'Quick Switch',           mode = 'n' },
+    { '<leader>og', '<cmd>ObsidianSearch<cr>',          desc = 'Grep Obsidian notes',    mode = 'n' },
+    { '<leader>ot', '<cmd>ObsidianTags<cr>',            desc = 'Search Obsidian tags',   mode = 'n' },
+    { '<leader>on', '<cmd>ObsidianNew<cr>',             desc = 'New Obsidian note',      mode = 'n' },
+    { '<leader>om', '<cmd>ObsidianNewFromTemplate<cr>', desc = 'New note from template', mode = 'n' },
   },
   opts = {
     workspaces = {
       {
         name = "pkm",
-        path = "~/Documents/pkm/",
+        path = "~/Documents/notes/",
         overrides = {
           notes_subdir = "00 Inbox",
           new_notes_location = "notes_subdir",
@@ -27,11 +30,18 @@ return {
     },
     open_app_foreground = true,
     templates = {
-      folder = "90 Resources/91 Templates",
+      folder = "99 Resources/Templates",
       date_format = "%Y-%m-%d",
       time_format = "%H:%M",
       -- A map for custom variables, the key should be the variable and the value a function
       substitutions = {},
+    },
+    daily_notes = {
+      folder = "20 Journal/",
+      date_format = "%Y-%m-%d",
+      alias_format = "%a %d %B %Y",
+      default_tags = { "journal" },
+      template = nil
     },
     completion = {
       nvim_cmp = true,
@@ -112,7 +122,7 @@ return {
       enable = false,
     },
     attachments = {
-      img_folder = "90 Resources/92 Attachments", -- This is the default
+      img_folder = "99 Resources/Attachments", -- This is the default
 
       -- Optional, customize the default name or prefix when pasting images via `:ObsidianPasteImg`.
       ---@return string
@@ -132,4 +142,30 @@ return {
       end,
     },
   },
+  config = function(_, opts)
+    require("obsidian").setup(opts)
+
+    local function update_daily_note()
+      local current_time = "**" .. os.date("%H:%M") .. "**"
+      local current_date = "# " .. os.date("%a %d %B %Y")
+
+      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+      if #lines == 0 or (#lines == 1 and lines[1] == "") then
+        -- File is empty → insert header + time
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, { current_date, "", "", current_time, "" })
+      else
+        -- Append time at the end
+        vim.api.nvim_buf_set_lines(0, -1, -1, false, { "", current_time, "" })
+      end
+
+      local last_line = vim.api.nvim_buf_line_count(0)
+      vim.api.nvim_win_set_cursor(0, { last_line, 0 })
+    end
+
+    vim.api.nvim_create_user_command("ObsidianTodayFull", function()
+      vim.cmd("ObsidianToday")
+      vim.defer_fn(update_daily_note, 100)
+    end, {})
+  end
 }

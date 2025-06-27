@@ -21,6 +21,8 @@ M.import_depdendencies = function()
   mlsp.setup()
 end
 
+
+
 M.setup_language_servers = function(defaults)
   local lspconfig = require("lspconfig")
   local lsputil = require("lspconfig.util")
@@ -48,7 +50,7 @@ M.setup_language_servers = function(defaults)
   lspconfig.ruby_lsp.setup(vim.tbl_deep_extend("force", {
     filetypes = { "ruby", "eruby" },
     init_options = {
-      -- formatter = 'standard',
+      formatter = 'standard',
       linters = { 'standard' },
       enabledFeatures = {
         formating = false,
@@ -57,8 +59,13 @@ M.setup_language_servers = function(defaults)
   }, defaults))
 
 
-  lspconfig.html.setup(vim.tbl_deep_extend("force", {
-    filetypes = { "html" },
+  -- HTML/CSS
+  lspconfig.emmet_language_server.setup(vim.tbl_deep_extend("force", {
+    filetypes = { "eruby", "html" },
+  }, defaults))
+
+  lspconfig.somesass_ls.setup(vim.tbl_deep_extend("force", {
+    filetypes = { "scss", "sass" },
   }, defaults))
 
 
@@ -76,6 +83,77 @@ M.setup_language_servers = function(defaults)
     enable_build_on_save = true,
     build_on_save_step = "check"
   }, defaults))
+
+  -- require("ltex-ls").setup({
+  --   on_attach = function(client, bufnr)   -- rest of your on_attach process.
+  --     M.default_on_attach(client, bufnr)
+  --
+  --     vim.keymap.set('n', "<leader>tl", M.toggle_ltex_spelllang,
+  --       { silent = true, remap = true, buffer = bufnr, desc = "Toggle language" })
+  --
+  --     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { desc = "Code action" })
+  --
+  --     -- require("ltex-utils").on_attach(bufnr)
+  --   end,
+  --   capabilities = M.set_capabilities(),
+  --   use_spellfile = false,
+  --   filetypes = { "latex", "tex", "bib", "markdown", "gitcommit", "text" },
+  --   settings = {
+  --     ltex = {
+  --       enabled = { "latex", "tex", "bib", "markdown", },
+  --       language = "en-US",
+  --       diagnosticSeverity = "information",
+  --       sentenceCacheSize = 2000,
+  --       additionalRules = {
+  --         enablePickyRules = true,
+  --         -- motherTongue = "fr",
+  --       },
+  --       dictionary = (function()
+  --         -- For dictionary, search for files in the runtime to have
+  --         -- and include them as externals the format for them is
+  --         -- dict/{LANG}.txt
+  --         --
+  --         -- Also add dict/default.txt to all of them
+  --         local files = {}
+  --         for _, file in ipairs(vim.api.nvim_get_runtime_file("dict/*", true)) do
+  --           local lang = vim.fn.fnamemodify(file, ":t:r")
+  --           local fullpath = vim.fs.normalize(file, ":p")
+  --           files[lang] = { ":" .. fullpath }
+  --         end
+  --
+  --         if files.default then
+  --           for lang, _ in pairs(files) do
+  --             if lang ~= "default" then
+  --               vim.list_extend(files[lang], files.default)
+  --             end
+  --           end
+  --           files.default = nil
+  --         end
+  --         return files
+  --       end)(),
+  --     },
+  --   },
+  -- })
+
+  -- -- Markdown
+  --
+  -- lspconfig.ltex.setup({
+  --   on_attach = function(client, bufnr) -- rest of your on_attach process.
+  --     M.default_on_attach(client, bufnr)
+  --
+  --     vim.keymap.set('n', "<leader>tl", M.toggle_ltex_spelllang,
+  --       { silent = true, remap = true, buffer = bufnr, desc = "Toggle language" })
+  --
+  --     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, {desc= "Code action"})
+  --
+  --     require("ltex-utils").on_attach(bufnr)
+  --   end,
+  --   capabilities = M.set_capabilities(),
+  -- })
+
+  -- lspconfig.ltex_ls.setup(vim.tbl_deep_extend("force", {
+  --   filetypes = { "markdown" },
+  -- }, defaults))
 end
 
 
@@ -87,7 +165,6 @@ M.default_on_attach = function(client, bufnr)
 
     vim.keymap.set('n', keys, func, { silent = true, remap = true, buffer = bufnr, desc = desc })
   end
-
 
   nmap("K", vim.lsp.buf.hover, "Hover documentation")
   nmap("<leader>k", vim.lsp.buf.signature_help, "Signature documentation")
