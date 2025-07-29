@@ -30,5 +30,9 @@ return {
       })
     end,
   },
+  {
+    "RRethy/nvim-treesitter-endwise",
+    ft = { "ruby" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+  },
 }
---sdf asdf 
