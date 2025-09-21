@@ -3,7 +3,8 @@ return {
   cmd = { "ConformInfo", "Conform" },
   keys = {
     {
-      "<C-c>i", "<CMD>Conform<CR>",
+      "<C-c>i",
+      "<CMD>Conform<CR>",
       mode = "",
       desc = "Format buffer",
     },
@@ -13,8 +14,11 @@ return {
 
     conform.setup({
       formatters_by_ft = {
-        -- ruby = { "standardrb", lsp_format = "fallback" },
+        ruby  = { lsp_format = "prefer" },
         eruby = { "erb_format" },
+        scss  = { "prettier" },
+        css   = { "prettier" },
+        sass  = { "prettier" },
       }
     })
     vim.api.nvim_create_user_command("Conform", function(args)

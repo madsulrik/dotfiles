@@ -53,7 +53,7 @@ M.setup_language_servers = function(defaults)
       formatter = 'standard',
       linters = { 'standard' },
       enabledFeatures = {
-        formating = false,
+        formatting = true,
       }
     },
   }, defaults))
@@ -74,6 +74,9 @@ M.setup_language_servers = function(defaults)
 
   -- Elm
   lspconfig.elmls.setup(defaults)
+
+  -- Typescript
+  -- lspconfig.vtlsl.setup(defaults)
 
   -- Haskell
   lspconfig.hls.setup(defaults)

@@ -51,7 +51,7 @@ return {
       { "<leader>bb",      "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", desc = "[B]Buffers [ ] Find existing buffers" },
       --
       -- -- Find
-      { "<C-s>",             telescope_fuzzy_search_in_current_buffer,                      desc = "Fuzzy [s]earch in current buffer" },
+      { "<C-s>",           telescope_fuzzy_search_in_current_buffer,                      desc = "Fuzzy [s]earch in current buffer" },
       { "<leader><space>", builtin.find_files,                                            desc = "Find files (root dir)" },
       { "<leader>ff",      builtin.find_files,                                            desc = "Find files (root dir)" },
       { "<leader>fF",      telescope_find_files_root,                                     desc = "Find files (cwd)" },
@@ -62,7 +62,7 @@ return {
       { "<leader>sg",      builtin.live_grep,                                             desc = "Grep (root dir)" },
       { "<leader>sd",      "<cmd>Telescope diagnostics bufnr=0<cr>",                      desc = "Document Diagnostics" },
       --
-      { "<leader>pf",      builtin.git_files,                                     desc = "Find files (git files)" },
+      { "<leader>pf",      builtin.git_files,                                             desc = "Find files (git files)" },
       --
     }
   end,
@@ -77,6 +77,18 @@ return {
           n = {},
         },
       },
+      extensions = {
+        fzf = {
+          fuzzy = true,                -- subsequence match
+          override_generic_sorter = true,
+          override_file_sorter = true, -- make fzf the file sorter
+          case_mode = "smart_case",    -- like Orderless smart-case
+        },
+      },
     }
-  end
+  end,
+  config = function(_, opts)
+    require('telescope').setup(opts)
+    pcall(require('telescope').load_extension, 'fzf')
+  end,
 }
