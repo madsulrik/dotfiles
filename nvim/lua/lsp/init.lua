@@ -1,215 +1,142 @@
 local M = {}
 
-M.import_depdendencies = function()
-  local loaded, mason = pcall(require, "mason")
-  if not loaded then
-    return
-  end
-
-  local loaded, mlsp = pcall(require, "mason-lspconfig")
-  if not loaded then
-    return
-  end
-
-  -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
-  local loaded, luadev = pcall(require, "neodev")
-  if loaded then
-    luadev.setup()
-  end
-
-  mason.setup()
-  mlsp.setup()
-end
-
-
-
-M.setup_language_servers = function(defaults)
-  local lspconfig = require("lspconfig")
-  local lsputil = require("lspconfig.util")
-
-
-  lspconfig.lua_ls.setup(vim.tbl_deep_extend("force", {
-    Lua = {
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { "vim" },
-      },
-      workspace = {
-        -- -- Make the server aware of Neovim runtime files
-        -- library = {
-        --   [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-        --   [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
-        -- },
-        workspace = { checkThirdParty = false },
-        telemetry = { enable = false },
-      },
-    }
-  }, defaults))
-
-  -- Ruby
-  lspconfig.ruby_lsp.setup(vim.tbl_deep_extend("force", {
-    filetypes = { "ruby", "eruby" },
-    init_options = {
-      formatter = 'standard',
-      linters = { 'standard' },
-      enabledFeatures = {
-        formatting = true,
-      }
-    },
-  }, defaults))
-
-
-  -- HTML/CSS
-  lspconfig.emmet_language_server.setup(vim.tbl_deep_extend("force", {
-    filetypes = { "eruby", "html" },
-  }, defaults))
-
-  lspconfig.somesass_ls.setup(vim.tbl_deep_extend("force", {
-    filetypes = { "scss", "sass" },
-  }, defaults))
-
-
-  -- Purescript
-  lspconfig.purescriptls.setup(defaults)
-
-  -- Elm
-  lspconfig.elmls.setup(defaults)
-
-  -- Typescript
-  -- lspconfig.vtlsl.setup(defaults)
-
-  -- Haskell
-  lspconfig.hls.setup(defaults)
-
-  -- Zig
-  lspconfig.zls.setup(vim.tbl_deep_extend("force", {
-    enable_build_on_save = true,
-    build_on_save_step = "check"
-  }, defaults))
-
-  -- require("ltex-ls").setup({
-  --   on_attach = function(client, bufnr)   -- rest of your on_attach process.
-  --     M.default_on_attach(client, bufnr)
-  --
-  --     vim.keymap.set('n', "<leader>tl", M.toggle_ltex_spelllang,
-  --       { silent = true, remap = true, buffer = bufnr, desc = "Toggle language" })
-  --
-  --     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { desc = "Code action" })
-  --
-  --     -- require("ltex-utils").on_attach(bufnr)
-  --   end,
-  --   capabilities = M.set_capabilities(),
-  --   use_spellfile = false,
-  --   filetypes = { "latex", "tex", "bib", "markdown", "gitcommit", "text" },
-  --   settings = {
-  --     ltex = {
-  --       enabled = { "latex", "tex", "bib", "markdown", },
-  --       language = "en-US",
-  --       diagnosticSeverity = "information",
-  --       sentenceCacheSize = 2000,
-  --       additionalRules = {
-  --         enablePickyRules = true,
-  --         -- motherTongue = "fr",
-  --       },
-  --       dictionary = (function()
-  --         -- For dictionary, search for files in the runtime to have
-  --         -- and include them as externals the format for them is
-  --         -- dict/{LANG}.txt
-  --         --
-  --         -- Also add dict/default.txt to all of them
-  --         local files = {}
-  --         for _, file in ipairs(vim.api.nvim_get_runtime_file("dict/*", true)) do
-  --           local lang = vim.fn.fnamemodify(file, ":t:r")
-  --           local fullpath = vim.fs.normalize(file, ":p")
-  --           files[lang] = { ":" .. fullpath }
-  --         end
-  --
-  --         if files.default then
-  --           for lang, _ in pairs(files) do
-  --             if lang ~= "default" then
-  --               vim.list_extend(files[lang], files.default)
-  --             end
-  --           end
-  --           files.default = nil
-  --         end
-  --         return files
-  --       end)(),
-  --     },
-  --   },
-  -- })
-
-  -- -- Markdown
-  --
-  -- lspconfig.ltex.setup({
-  --   on_attach = function(client, bufnr) -- rest of your on_attach process.
-  --     M.default_on_attach(client, bufnr)
-  --
-  --     vim.keymap.set('n', "<leader>tl", M.toggle_ltex_spelllang,
-  --       { silent = true, remap = true, buffer = bufnr, desc = "Toggle language" })
-  --
-  --     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, {desc= "Code action"})
-  --
-  --     require("ltex-utils").on_attach(bufnr)
-  --   end,
-  --   capabilities = M.set_capabilities(),
-  -- })
-
-  -- lspconfig.ltex_ls.setup(vim.tbl_deep_extend("force", {
-  --   filetypes = { "markdown" },
-  -- }, defaults))
-end
-
+-- ── Helpers ──────────────────────────────────────────────────────────────────
 
 M.default_on_attach = function(client, bufnr)
   local nmap = function(keys, func, desc)
-    if desc then
-      desc = 'LSP: ' .. desc
-    end
-
-    vim.keymap.set('n', keys, func, { silent = true, remap = true, buffer = bufnr, desc = desc })
+    if desc then desc = "LSP: " .. desc end
+    vim.keymap.set("n", keys, func, { silent = true, remap = true, buffer = bufnr, desc = desc })
   end
 
-  nmap("K", vim.lsp.buf.hover, "Hover documentation")
-  nmap("<leader>k", vim.lsp.buf.signature_help, "Signature documentation")
+  nmap("K", vim.lsp.buf.hover, "Hover")
+  nmap("<leader>k", vim.lsp.buf.signature_help, "Signature help")
 
-  nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-  nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-  nmap("gt", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
+  nmap("gd", require("telescope.builtin").lsp_definitions, "Goto definition")
+  nmap("gr", require("telescope.builtin").lsp_references, "Goto references")
+  nmap("gI", require("telescope.builtin").lsp_implementations, "Goto implementation")
+  nmap("gt", require("telescope.builtin").lsp_type_definitions, "Goto type")
+  nmap("gD", vim.lsp.buf.declaration, "Goto declaration")
 
-  nmap("gD", vim.lsp.buf.declaration, "[G]oto [D]efinition")
+  nmap("gj", vim.diagnostic.goto_next, "Next diagnostic")
+  nmap("gk", vim.diagnostic.goto_prev, "Prev diagnostic")
+  nmap("<leader>e", vim.diagnostic.open_float, "Floating line diagnostics")
+  nmap("<leader>q", vim.diagnostic.setloclist, "Diagnostics list")
 
-  -- Navigate diagnotis errors/mesages
-  nmap("gj", vim.diagnostic.goto_next, "Go to next diagnostic message")
-  nmap("gk", vim.diagnostic.goto_prev, "Go to preious diagnostic message")
-  nmap("<leader>e", vim.diagnostic.open_float, "Open floating diagnostic message")
-  nmap("<leader>q", vim.diagnostic.setloclist, "Open diagnostic list")
-
-  vim.api.nvim_buf_create_user_command(bufnr, 'LspFormat', function(_)
+  vim.api.nvim_buf_create_user_command(bufnr, "LspFormat", function()
     vim.lsp.buf.format()
-  end, { desc = 'Format current buffer with LSP' })
+  end, { desc = "Format buffer with LSP" })
 end
 
 M.set_capabilities = function()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-  local loaded, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-  if not loaded then
-    return capabilities
-  end
-
-  return cmp_nvim_lsp.default_capabilities(capabilities)
+  local caps = vim.lsp.protocol.make_client_capabilities()
+  local ok, cmp = pcall(require, "cmp_nvim_lsp")
+  if ok then caps = cmp.default_capabilities(caps) end
+  return caps
 end
 
+-- ── Optional installers (Mason only for binaries) ────────────────────────────
+M.import_dependencies = function()
+  pcall(function()
+    require("mason").setup()
+  end)
+  -- neodev should be set up before lua_ls
+  pcall(function()
+    require("neodev").setup({})
+  end)
+end
+
+
+-- ── Main setup ───────────────────────────────────────────────────────────────
 M.setup = function()
-  M.import_depdendencies()
+  M.import_dependencies()
 
   local defaults = {
     on_attach = M.default_on_attach,
     capabilities = M.set_capabilities(),
   }
 
-  M.setup_language_servers(defaults)
+  -- LUA
+  vim.lsp.config("lua_ls", vim.tbl_deep_extend("force", {
+    settings = {
+      Lua = {
+        diagnostics = { globals = { "vim" } },
+        workspace   = { checkThirdParty = false },
+        telemetry   = { enable = false },
+      },
+    },
+  }, defaults))
+  vim.lsp.enable("lua_ls")
+
+  -- RUBY (via Bundler; keeps standard + standard-rails working)
+  vim.lsp.config("ruby_lsp", vim.tbl_deep_extend("force", {
+    cmd = { "bundle", "exec", "ruby-lsp" },
+    filetypes = { "ruby", "eruby" },
+    init_options = {
+      formatter       = "standard",
+      linters         = { "standard" },
+      enabledFeatures = { formatting = true },
+    },
+  }, defaults))
+  vim.lsp.enable("ruby_lsp")
+
+  -- HTML/CSS helpers
+  vim.lsp.config("emmet_language_server", vim.tbl_deep_extend("force", {
+    filetypes = { "eruby", "html" },
+  }, defaults))
+  vim.lsp.enable("emmet_language_server")
+
+  vim.lsp.config("somesass_ls", vim.tbl_deep_extend("force", {
+    filetypes = { "scss", "sass" },
+  }, defaults))
+  vim.lsp.enable("somesass_ls")
+
+  -- Purescript
+  vim.lsp.config("purescriptls", defaults); vim.lsp.enable("purescriptls")
+
+  -- Elm
+  vim.lsp.config("elmls", defaults); vim.lsp.enable("elmls")
+
+  -- Haskell
+  vim.lsp.config("hls", defaults); vim.lsp.enable("hls")
+
+  -- Zig
+  vim.lsp.config("zls", vim.tbl_deep_extend("force", {
+    settings = {
+      zls = {
+        enable_build_on_save = true,
+        build_on_save_step = "check",
+      },
+    },
+  }, defaults))
+  vim.lsp.enable("zls")
+
+  -- TS + JS
+  vim.lsp.config("vtsls", vim.tbl_deep_extend("force", {
+    {
+      settings = {
+        typescript = { format = { enable = false } },
+        javascript = { format = { enable = false } },
+      },
+    }
+  }, defaults))
+  vim.lsp.enable("vtsls")
+
+  vim.lsp.config("elslint", vim.tbl_deep_extend("force", {
+
+    -- on_attach = function(_, bufnr)
+    --   -- vim.api.nvim_create_autocmd("BufWritePre", {
+    --   --   buffer = bufnr,
+    --   --   callback = function()
+    --   --     pcall(vim.lsp.buf.code_action, {
+    --   --       context = { only = { "source.fixAll.eslint" } },
+    --   --       apply = true,
+    --   --     })
+    --   --   end,
+    --   -- })
+    -- end,
+    settings = { format = false }, -- leave formatting to Prettier/Biome
+  }, defaults))
+  vim.lsp.enable("eslint")
 end
 
 return M
