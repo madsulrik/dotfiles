@@ -1,37 +1,7 @@
 return {
-
-  -- {
-  --   'vigoux/ltex-ls.nvim',
-  --   -- dependencies = 'neovim/nvim-lspconfig',
-  --   opts = {
-  --     filetypes = {
-  --       'bib',
-  --       'gitcommit',
-  --       'latex',
-  --       'markdown',
-  --       'rst',
-  --       'tex',
-  --       'text',
-  --     },
-  --     -- use_spellfile = true,
-  --     settings = {
-  --       ltex = {
-  --         language = 'en_US',
-  --         additionalRules = {
-  --           enablePickyRules = true,
-  --           motherTongue = 'en',
-  --         },
-  --       },
-  --     },
-  --   },
-  -- },
   {
     'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
     opts = {
       heading = {
         enabled = false,
@@ -45,39 +15,65 @@ return {
     ft = { "markdown" },
     build = function() vim.fn["mkdp#util#install"]() end,
   },
-  -- Lua
   {
-    "preservim/vim-pencil",
+    "andrewferrier/wrapping.nvim",
     ft = "markdown",
     config = function()
-      -- Plugin settings for vim-pencil
-      vim.g["pencil#wrapModeDefault"] = "soft"
-      vim.g["pencil#autoformat"] = 1
-      vim.g["pencil#textwidth"] = 100
-      vim.cmd("call pencil#init({'wrap': 'soft', 'autoformat': 1})")
+      require("wrapping").setup()
 
-      -- Key mappings only for markdown files with descriptions
-      local opts = { noremap = true, silent = true, buffer = true }
-      vim.keymap.set("n", "Q", "gqap", vim.tbl_extend("force", opts, { desc = "Reformat paragraph (normal mode)" }))
-      vim.keymap.set("x", "Q", "gq", vim.tbl_extend("force", opts, { desc = "Reformat selection (visual mode)" }))
-      vim.keymap.set("n", "<leader>Q", "vapJgqap",
-        vim.tbl_extend("force", opts, { desc = "Reformat and join paragraph" }))
-      vim.keymap.set("n", "<localleader>jp", "vipJ",
-        vim.tbl_extend("force", opts, { desc = "Join all lines in the current paragraph" }))
-      vim.keymap.set("n", "<localleader>jb", ":%norm vipJ<CR>",
-        vim.tbl_extend("force", opts, { desc = "Join all lines in all paragraphs in the buffer" }))
+      local function copy_flatten_visual()
+        -- yank visual selection to system clipboard
+        vim.cmd('normal! "+y')
+
+        local reg = vim.fn.getreg("+")
+        reg = reg:gsub("\r", "\n")
+
+        -- 1) Protect markdown hard line breaks:
+        --    "  \n" (two spaces + newline)
+        --    "\\\n" (backslash + newline)
+        reg = reg:gsub("  \n", "§§HARD_BR§§")
+        reg = reg:gsub("\\\n", "§§HARD_BR§§")
+
+        -- 2) Protect paragraph breaks (blank lines)
+        reg = reg:gsub("\n\n+", "§§PARA_BREAK§§")
+
+        -- 3) Flatten remaining single newlines (normal wraps) to spaces
+        reg = reg:gsub("\n", " ")
+
+        -- 4) Restore paragraph breaks and hard line breaks
+        reg = reg:gsub("§§PARA_BREAK§§", "\n\n")
+        reg = reg:gsub("§§HARD_BR§§", "\n")
+
+        vim.fn.setreg("+", reg)
+      end
+
+      local function copy_flatten_paragraph()
+        -- select inner paragraph and yank to system clipboard
+        vim.cmd('normal! vipy"+y')
+
+        local reg = vim.fn.getreg("+")
+        reg = reg:gsub("\r", "\n")
+
+        -- same protection logic as visual, in case the paragraph has hard breaks
+        reg = reg:gsub("  \n", "§§HARD_BR§§")
+        reg = reg:gsub("\\\n", "§§HARD_BR§§")
+
+        -- we don't expect paragraph breaks here, but it doesn't hurt to be safe:
+        reg = reg:gsub("\n\n+", "§§PARA_BREAK§§")
+
+        reg = reg:gsub("\n", " ")
+        reg = reg:gsub("§§PARA_BREAK§§", "\n\n")
+        reg = reg:gsub("§§HARD_BR§§", "\n")
+
+        vim.fn.setreg("+", reg)
+      end
+
+      vim.keymap.set("x", "<localleader>y", copy_flatten_visual, { desc = "Copy (flatten wraps, keep breaks)" })
+      vim.keymap.set("n", "<localleader>Y", copy_flatten_paragraph, { desc = "Copy paragraph (flatten wraps, keep breaks)" })
     end,
   },
   {
-    "folke/twilight.nvim",
-    -- ft = "markdown",
-    opts = {
-      context = 1,
-    }
-  },
-  {
     "folke/zen-mode.nvim",
-    dependencies = { 'folke/twilight.nvim' },
     keys = {
       {
         "<leader>tz",
@@ -94,14 +90,6 @@ return {
           relativenumber = false, -- disable relative numbers
         }
       },
-      on_open = function(win)
-        vim.g["pencil#wrapModeDefault"] = "soft"
-        vim.g["pencil#autoformat"] = 1
-        vim.cmd("Pencil") -- Activate Pencil mode
-      end,
-      on_close = function()
-        vim.cmd("PencilOff")
-      end,
     }
   }
 }

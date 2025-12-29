@@ -21,6 +21,7 @@ return {
         scss       = { "prettier" },
         css        = { "prettier" },
         sass       = { "prettier" },
+        markdown   = { "prettier" },
       }
     })
     vim.api.nvim_create_user_command("Conform", function(args)
