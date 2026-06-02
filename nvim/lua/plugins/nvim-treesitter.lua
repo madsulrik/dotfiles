@@ -21,6 +21,7 @@ return {
       "html",
       "javascript",
       "typescript",
+      "svelte",
       "tsx",
       "json",
       "lua",

@@ -16,8 +16,10 @@ return {
       formatters_by_ft = {
         ruby       = { lsp_format = "prefer" },
         eruby      = { "erb_format" },
+
         javascript = { "prettier", lsp_format = "fallback" },
         typescript = { "prettier", lsp_format = "fallback" },
+        svelte     = { "prettier" },
         scss       = { "prettier" },
         css        = { "prettier" },
         sass       = { "prettier" },

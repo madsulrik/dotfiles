@@ -81,7 +81,7 @@ M.setup = function()
 
   -- HTML/CSS helpers
   vim.lsp.config("emmet_language_server", vim.tbl_deep_extend("force", {
-    filetypes = { "eruby", "html" },
+    filetypes = { "eruby", "html", "svelte" },
   }, defaults))
   vim.lsp.enable("emmet_language_server")
 
@@ -110,33 +110,47 @@ M.setup = function()
   }, defaults))
   vim.lsp.enable("zls")
 
-  -- TS + JS
+  -- TS + JS + Svelte
   vim.lsp.config("vtsls", vim.tbl_deep_extend("force", {
-    {
-      settings = {
-        typescript = { format = { enable = false } },
-        javascript = { format = { enable = false } },
-      },
-    }
+    settings = {
+      typescript = { format = { enable = false } },
+      javascript = { format = { enable = false } },
+    },
   }, defaults))
   vim.lsp.enable("vtsls")
 
-  vim.lsp.config("elslint", vim.tbl_deep_extend("force", {
-
-    -- on_attach = function(_, bufnr)
-    --   -- vim.api.nvim_create_autocmd("BufWritePre", {
-    --   --   buffer = bufnr,
-    --   --   callback = function()
-    --   --     pcall(vim.lsp.buf.code_action, {
-    --   --       context = { only = { "source.fixAll.eslint" } },
-    --   --       apply = true,
-    --   --     })
-    --   --   end,
-    --   -- })
-    -- end,
+  vim.lsp.config("eslint", vim.tbl_deep_extend("force", {
+    filetypes = {
+      "javascript", "javascriptreact",
+      "typescript", "typescriptreact",
+      "svelte",
+    },
     settings = { format = false }, -- leave formatting to Prettier/Biome
   }, defaults))
   vim.lsp.enable("eslint")
+
+  -- 3) Svelte
+  vim.lsp.config("svelte", vim.tbl_deep_extend("force", {
+    on_attach = function(client, bufnr)
+      M.default_on_attach(client, bufnr)
+
+      -- Make Svelte react to TS/JS changes (SvelteKit: +page.ts, hooks, etc.)
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = { "*.js", "*.ts" },
+        callback = function(ctx)
+          client.notify("$/onDidChangeTsOrJsFile", {
+            uri = vim.uri_from_fname(ctx.file),
+          })
+        end,
+      })
+    end,
+  }, defaults))
+  vim.lsp.enable("svelte")
+
+  vim.lsp.config("tailwindcss", vim.tbl_deep_extend("force", {
+    filetypes = { "svelte" },
+  }, defaults))
+  vim.lsp.enable("tailwindcss")
 end
 
 return M
