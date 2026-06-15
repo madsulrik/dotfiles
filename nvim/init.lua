@@ -3,6 +3,7 @@ vim.opt.termguicolors = true
 local modules = {
   "config.options",
   "config.keymaps",
+  "config.writing",
   "config.plugins",
 }
 

@@ -151,6 +151,31 @@ M.setup = function()
     filetypes = { "svelte" },
   }, defaults))
   vim.lsp.enable("tailwindcss")
+
+  -- Harper (fast spelling + basic grammar) — started on demand via writing.lua
+  vim.lsp.config("harper_ls", vim.tbl_deep_extend("force", {
+    filetypes = { "markdown" },
+    settings = {
+      ["harper-ls"] = {
+        linters = {
+          sentence_capitalization = false,
+        },
+      },
+    },
+  }, defaults))
+
+  -- ltex (LanguageTool deep grammar) — started on demand via writing.lua
+  vim.lsp.config("ltex_plus", vim.tbl_deep_extend("force", {
+    filetypes = { "markdown" },
+    settings = {
+      ltex = {
+        language = "en-US",
+        additionalRules = {
+          motherTongue = "da-DK",
+        },
+      },
+    },
+  }, defaults))
 end
 
 return M

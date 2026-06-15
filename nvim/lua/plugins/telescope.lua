@@ -12,6 +12,7 @@ return {
         return vim.fn.executable 'make' == 1
       end,
     },
+    'nvim-telescope/telescope-ui-select.nvim',
   },
   keys = function()
     -- local utils = require("telescope.utils")
@@ -84,11 +85,15 @@ return {
           override_file_sorter = true, -- make fzf the file sorter
           case_mode = "smart_case",    -- like Orderless smart-case
         },
+        ["ui-select"] = {
+          require("telescope.themes").get_cursor(),
+        },
       },
     }
   end,
   config = function(_, opts)
     require('telescope').setup(opts)
     pcall(require('telescope').load_extension, 'fzf')
+    pcall(require('telescope').load_extension, 'ui-select')
   end,
 }
